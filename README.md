@@ -1,117 +1,64 @@
-# MongoDB 7.0 Offline Installation for Ubuntu 22.04.5
+Good — you're installing **MongoDB 7.0** on **Ubuntu 22.04 (Jammy)**.
 
-This repository contains `.deb` offline installation packages for **MongoDB 7.0.8** and **MongoSH 2.2.4**.
-
-Use this to install MongoDB on any **Ubuntu 22.04.5 LTS server** without needing internet access during installation.
+Here’s the **correct and updated** MongoDB 7.0 installation script with all official URLs and `apt-key` fix (for 2025 best practices):
 
 ---
 
-## 📦 Included Packages
-
-* `mongodb-org-database_7.0.8_amd64.deb`
-* `mongodb-org-server_7.0.8_amd64.deb`
-* `mongodb-org-shell_7.0.8_amd64.deb`
-* `mongodb-org-tools_7.0.8_amd64.deb`
-* `mongodb-org-mongos_7.0.8_amd64.deb`
-* `mongosh_2.2.4_amd64.deb`
-
----
-
-## 🚀 Installation Steps
-
-### 1. Clone the Repository
+### ✅ **Production-Ready MongoDB 7.0 Install Script (Ubuntu 22.04)**
 
 ```bash
-git clone https://github.com/vandralcapital/mongo.git
-cd mongo
-```
+# Step 1: Import MongoDB 7.0 GPG key and save to keyrings
+curl -fsSL https://pgp.mongodb.com/server-7.0.asc | gpg --dearmor -o /usr/share/keyrings/mongodb-org-7.0.gpg
 
----
+# Step 2: Add the MongoDB 7.0 repository for Ubuntu 22.04 (jammy)
+echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-org-7.0.gpg ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/7.0 multiverse" | \
+  sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list
 
-### 2. Install the `.deb` Packages
+# Step 3: Update apt and install MongoDB 7.0
+sudo apt update
+sudo apt install -y mongodb-org
 
-```bash
-sudo dpkg -i *.deb
-```
-
-If you encounter dependency errors:
-
-```bash
-sudo apt --fix-broken install -y
-sudo dpkg -i *.deb
-```
-
----
-
-### 3. Start and Enable MongoDB
-
-```bash
-sudo systemctl start mongod
+# Step 4: Enable and start MongoDB service
 sudo systemctl enable mongod
+sudo systemctl start mongod
 ```
 
 ---
 
-### 4. Verify the Installation
+### 📎 **Breakdown of URLs Used**
+
+| Purpose             | URL                                                                    |
+| ------------------- | ---------------------------------------------------------------------- |
+| GPG Key (MongoDB 7) | `https://pgp.mongodb.com/server-7.0.asc`                               |
+| APT Repo (Jammy)    | `https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/7.0 multiverse` |
+
+---
+
+### ✅ **Verify Installation**
 
 ```bash
 mongod --version
-mongosh
+sudo systemctl status mongod
 ```
 
 ---
 
-## 🔓 Optional: Enable Remote Access
+### ⚠️ **Troubleshooting (Just in Case)**
 
-Edit the config:
+If you see:
 
 ```bash
-sudo nano /etc/mongod.conf
+mongodb-org-database depends on mongodb-org-database-tools-extra
 ```
 
-Change:
-
-```yaml
-bindIp: 127.0.0.1
-```
-
-To:
-
-```yaml
-bindIp: 0.0.0.0
-```
-
-Then:
+Fix it manually with:
 
 ```bash
-sudo systemctl restart mongod
-sudo ufw allow 27017
+sudo apt install mongodb-org-database-tools-extra
 ```
 
 ---
 
-## 🔐 Optional: Create Admin User (if enabling auth)
+### 💾 Want it as `.sh` Script?
 
-```bash
-mongosh
-```
-
-Inside the shell:
-
-```js
-use admin
-
-db.createUser({
-  user: "admin",
-  pwd: "yourpassword",
-  roles: [ { role: "userAdminAnyDatabase", db: "admin" } ]
-})
-```
-
----
-
-## ✅ Done!
-
-MongoDB 7.0.8 is now installed and ready to use offline.
-
----
+Would you like me to give you this in a ready-to-run `install-mongodb7.sh` file format too?
